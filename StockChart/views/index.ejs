@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K線圖</title>
+    <link rel="shortcut icon" href="#">
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
+    <!-- <script src="https://cdn.anychart.com/js/latest/anychart-bundle.min.js" type="text/javascript"></script> -->
+    <script src="https://cdn.anychart.com/releases/8.0.0/js/anychart-core.min.js" type="text/javascript"></script>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-ui.min.js" type="text/javascript"></script>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-exports.min.js" type="text/javascript"></script>
+	<script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-stock.min.js" type="text/javascript"></script>
+    <!-- <script src="https://cdn.anychart.com/csv-data/csco-daily.js" type="text/javascript"></script> -->
+    <link href="https://cdn.anychart.com/releases/v8/css/anychart-ui.min.css" rel="stylesheet" type="text/css">
+    <style>
+        html, body{
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #container{
+            width: 550px;
+            height: 800px;
+        }
+        .anychart-credits-text, .anychart-credits-logo {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <p id="linkAnychart"></p>
+    <div id="container"></div>
+    <script>
+        var data = <%- JSON.stringify(stockData)  %>;
+        // console.log(data);
+        var stockData = [];
+        for (let i = 0; i < data.chart.result[0].indicators.quote[0].close.length; i++) {
+            stockData.push(
+                [
+                new Date(data.chart.result[0].timestamp[i] * 1000),
+                Number(data.chart.result[0].indicators.quote[0].open[i]),
+                Number(data.chart.result[0].indicators.quote[0].high[i]),
+                Number(data.chart.result[0].indicators.quote[0].low[i]),
+                Number(data.chart.result[0].indicators.quote[0].close[i]),
+                // Number(body.chart.result[0].indicators.quote[0].volume[i])
+                ]
+            );
+        }
+        // console.log(stockData);
+
+        
+
+        var chart;
+        anychart.onDocumentReady(function () {
+            table = anychart.data.table();
+            table.addData(stockData);
+            // map the data
+            mapping = table.mapAs();
+            mapping.addField('open', 1);
+            mapping.addField('high', 2);
+            mapping.addField('low', 3);
+            mapping.addField('close', 4);
+
+            // chart type
+            chart = anychart.stock();
+            // set the series
+            var plot = chart.plot();
+            var series = plot.candlestick(mapping);
+            chart.plot(0).legend(false);
+            // series.name(data.chart.result[0].meta.symbol);
+            series.risingStroke("#FF0000");
+            series.risingFill("#FF0000", 0.8);
+            series.fallingStroke("#006400");
+            series.fallingFill("#006400", 0.8);
+            
+            // adjusting major and minor grids
+            var yGrid = plot.yMinorGrid();
+            yGrid.stroke('#CFD8DC');
+
+            // adjusting major and minor grids
+            // var xAxis = plot.xAxis();
+            // var xGrid = plot.xMinorGrid(20);
+            // xGrid.stroke('#CFD8DC');
+            // turn it off
+            chart.scroller().enabled(false);
+            
+            chart.title(data.chart.result[0].meta.symbol);
+            chart.container('container');
+            chart.draw();
+            chart.shareAsJpg(function (response) {
+                document.getElementById("linkAnychart").innerText = response.replace("http", "https");
+            }, function(){}, false, 400, 400);        
+        });
+    </script>
+</body>
+</html>
