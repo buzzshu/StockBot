@@ -8,8 +8,9 @@ K線圖的K + 股票代號
 
 ## 使用
 先加入我們Gold Rush聊天機器人  
-
+![image](https://github.com/dkmsfire/StockBot/blob/master/1649339230271.jpg)  
 再使用我們的關鍵字查詢股票K線圖  
+![image](https://github.com/dkmsfire/StockBot/blob/master/S__94232579.jpg)  
 
 ## 技術
 * Node.js
